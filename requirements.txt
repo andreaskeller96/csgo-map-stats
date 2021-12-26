@@ -1,0 +1,5 @@
+numpy
+requests
+pandas
+influxdb_client
+json
