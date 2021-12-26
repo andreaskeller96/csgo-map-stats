@@ -113,10 +113,8 @@ def insertIntoDB(playerStatistics):
                                 data_frame_tag_columns=['map','max_players','region'])
 
 def main():
-    print(datetime.utcnow().timestamp())
     statisticsDF = getPlayerNumbers()
     insertIntoDB(statisticsDF)
-    print(datetime.utcnow().timestamp())
 
 
 

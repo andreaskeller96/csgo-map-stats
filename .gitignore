@@ -127,3 +127,5 @@ dmypy.json
 
 # Pyre type checker
 .pyre/
+steamapitoken.txt
+influxdb_cred.json
