@@ -10,7 +10,7 @@ from influxdb_client import InfluxDBClient, Point, WriteOptions
 def getServerStats(filter):
     steamAPIKey = ""
     with open("steamapitoken.txt") as f:
-        steamAPIKey = f.readline()
+        steamAPIKey = f.readline().strip()
     print(f"Read Steam API Token: {steamAPIKey}")
     endpoint = "https://api.steampowered.com/IGameServersService/GetServerList/v1/"
     params = {
