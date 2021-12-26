@@ -11,7 +11,6 @@ def getServerStats(filter):
     steamAPIKey = ""
     with open("steamapitoken.txt") as f:
         steamAPIKey = f.readline().strip()
-    print(f"Read Steam API Token: {steamAPIKey}")
     endpoint = "https://api.steampowered.com/IGameServersService/GetServerList/v1/"
     params = {
         "key":steamAPIKey,
@@ -53,7 +52,6 @@ def getPlayerNumbers():
         else:
             combinedStats += stat
     mapStats = pd.DataFrame(combinedStats)
-    print(mapStats)
     maps = mapStats[mapStats["map"].notna()]["map"].unique()
     maps.sort()
 
