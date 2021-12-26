@@ -11,6 +11,7 @@ def getServerStats(filter):
     steamAPIKey = ""
     with open("steamapitoken.txt") as f:
         steamAPIKey = f.readline()
+    print(f"Read Steam API Token: {steamAPIKey}")
     endpoint = "https://api.steampowered.com/IGameServersService/GetServerList/v1/"
     params = {
         "key":steamAPIKey,
