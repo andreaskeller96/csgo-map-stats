@@ -20,11 +20,14 @@ def getServerStats(filter):
     }
     response = requests.get(endpoint,params)
     if response.status_code != 200:
+        print(f"Failed to request data: {response.text}")
         return None
     responseJSON = json.loads(response.text)
     if "response" not in responseJSON:
+        print(f"Failed to request data: {response.text}")
         return None
     if "servers" not in responseJSON["response"]:
+        print(f"Failed to request data: {response.text}")
         return None
     return responseJSON["response"]["servers"]
 
