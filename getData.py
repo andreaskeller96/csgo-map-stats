@@ -115,9 +115,33 @@ def insertIntoDB(playerStatistics):
             _write_client.write(bucket, org, record=playerStatistics, data_frame_measurement_name='player_count',
                                 data_frame_tag_columns=['map','max_players','region'])
 
+def insertTotalsIntoDB(playerStatistics):
+    credentials = []
+    with open("influxdb_cred.json") as f:
+        credentials = json.load(f)
+    token = credentials["token"]
+    org = credentials["org"]
+    bucket = credentials["bucket"]
+    url = credentials["url"]
+
+    with InfluxDBClient(url=url, token=token, org=org) as _client:
+        with _client.write_api(write_options=WriteOptions(batch_size=500,
+                                                          flush_interval=10_000,
+                                                          jitter_interval=2_000,
+                                                          retry_interval=5_000,
+                                                          max_retries=5,
+                                                          max_retry_delay=30_000,
+                                                          exponential_base=2)) as _write_client:
+            _write_client.write(bucket, org, record=playerStatistics, data_frame_measurement_name='player_count_totals',
+                                data_frame_tag_columns=['region'])
+
 def main():
     statisticsDF = getPlayerNumbers()
     insertIntoDB(statisticsDF)
+    df = statisticsDF[["region", "players"]].groupby("region").sum()
+    df.reset_index(inplace=True)
+    df = df.set_index(pd.DatetimeIndex(np.full(df.index.size, datetime.utcnow())))
+    insertTotalsIntoDB(df)
 
 
 
