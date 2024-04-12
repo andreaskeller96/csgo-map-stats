@@ -76,22 +76,43 @@ def getPlayerNumbers():
     data = []
     for map in maps:
         current = mapStats[mapStats["map"]==map]
-        max_players = current["max_players"].unique()
-        max_players.sort()
-        for max_player in max_players:
-            currentMP = current[current["max_players"]==max_player]
-            regions = currentMP["region"].unique()
+        cur_players = current["players"].unique()
+        cur_players.sort()
+        for cur_player in cur_players:
+            currentP = current[current["players"]==cur_player]
+            maxplayers = currentP["max_players"].unique()
+            maxplayers.sort()
+            maxplayers_string = ""
+            for maxplayer in maxplayers:
+                maxplayers_string+=str(maxplayer)+";"
+            regions = currentP["region"].unique()
             regions.sort()
-            for k, v in region_dict.items():
-                players = currentMP[currentMP["region"].isin(v)]["players"].sum()
+            for region in regions:
+                players = currentP[currentP["region"]==region]["players"].sum()
                 if players == 0:
                     continue
-                data.append([map, k, max_player,players])
-            otherplayers = currentMP[~currentMP["region"].isin(all_regions)]["players"].sum()
-            if otherplayers != 0:
-                data.append([map, "other", max_player,players])
+                regionname = "other"
+                for k,v in region_dict.items():
+                    if region in v:
+                        regionname = k
+                        break
+                data.append([map, regionname, region, cur_player, players, maxplayers_string])
+        #max_players = current["max_players"].unique()
+        #max_players.sort()
+        #for max_player in max_players:
+        #    currentMP = current[current["max_players"]==max_player]
+        #    regions = currentMP["region"].unique()
+        #    regions.sort()
+        #    for k, v in region_dict.items():
+        #        players = currentMP[currentMP["region"].isin(v)]["players"].sum()
+        #        if players == 0:
+        #            continue
+        #        data.append([map, k, max_player,players])
+        #    otherplayers = currentMP[~currentMP["region"].isin(all_regions)]["players"].sum()
+        #    if otherplayers != 0:
+        #        data.append([map, "other", max_player,players])
 
-    playerStatistics = pd.DataFrame(columns=["map", "region","max_players","players"],data=data)
+    playerStatistics = pd.DataFrame(columns=["map", "region_name", "region_id", "players_per_server","players", "max_players_string"],data=data)
     playerStatistics = playerStatistics.set_index(pd.DatetimeIndex(np.full(playerStatistics.index.size, datetime.utcnow())))
     return playerStatistics
 
@@ -112,8 +133,8 @@ def insertIntoDB(playerStatistics):
                                                           max_retries=5,
                                                           max_retry_delay=30_000,
                                                           exponential_base=2)) as _write_client:
-            _write_client.write(bucket, org, record=playerStatistics, data_frame_measurement_name='player_count',
-                                data_frame_tag_columns=['map','max_players','region'])
+            _write_client.write(bucket, org, record=playerStatistics, data_frame_measurement_name='player_count_v2',
+                                data_frame_tag_columns=['map','players_per_server','region_name', 'region_id'])
 
 def insertTotalsIntoDB(playerStatistics):
     credentials = []
@@ -138,7 +159,7 @@ def insertTotalsIntoDB(playerStatistics):
 def main():
     statisticsDF = getPlayerNumbers()
     insertIntoDB(statisticsDF)
-    df = statisticsDF[["region", "players"]].groupby("region").sum()
+    df = statisticsDF[["region_name", "players"]].groupby("region_name").sum()
     df.reset_index(inplace=True)
     df = df.set_index(pd.DatetimeIndex(np.full(df.index.size, datetime.utcnow())))
     insertTotalsIntoDB(df)
