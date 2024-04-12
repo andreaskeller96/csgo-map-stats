@@ -158,11 +158,11 @@ def insertTotalsIntoDB(playerStatistics):
 
 def main():
     statisticsDF = getPlayerNumbers()
-    insertIntoDB(statisticsDF)
+    #insertIntoDB(statisticsDF)
     df = statisticsDF[["region_name", "players"]].groupby("region_name").sum()
-    df.rename(columns={'region_name': 'region'}, inplace=True)
     df.reset_index(inplace=True)
     df = df.set_index(pd.DatetimeIndex(np.full(df.index.size, datetime.utcnow())))
+    df.rename(columns={'region_name': 'region'}, inplace=True)
     insertTotalsIntoDB(df)
 
 
