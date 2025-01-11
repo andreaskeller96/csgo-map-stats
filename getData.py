@@ -59,7 +59,7 @@ def getPlayerNumbers():
     region_eu = [3,8,9,21,28,44,45]
     region_sa = [10,14,15,38]
     region_asia = [5,6,16,19,24,26,39]
-    region_china = [12,17,25,42,46,49]
+    region_china = [12,17,25,42,46,49,51]
     region_other = [11,7]
 
     all_regions = region_us+region_eu+region_sa+region_asia+region_china+region_other
