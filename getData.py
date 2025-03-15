@@ -55,7 +55,7 @@ def getPlayerNumbers():
     maps = mapStats[mapStats["map"].notna()]["map"].unique()
     maps.sort()
 
-    region_us = [1,2,22,23,27]
+    region_us = [1,2,22,23,27,31]
     region_eu = [3,8,9,21,28,44,45]
     region_sa = [10,14,15,38]
     region_asia = [5,6,16,19,24,26,39]
