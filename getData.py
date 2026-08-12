@@ -52,8 +52,7 @@ def getPlayerNumbers():
         else:
             combinedStats += stat
     mapStats = pd.DataFrame(combinedStats)
-    maps = mapStats[mapStats["map"].notna()]["map"].unique()
-    maps.sort()
+    maps = sorted(mapStats[mapStats["map"].notna()]["map"].unique())
 
     region_us = [1,2,22,23,27,31]
     region_eu = [3,8,9,21,28,44,45,52]
